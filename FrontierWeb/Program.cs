@@ -6,6 +6,12 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
+
 // Auth
 var cfg = builder.Configuration;
 var jwtKey = cfg["Auth:Key"] ?? "DEV_ONLY_CHANGE_ME";
@@ -40,9 +46,18 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins(
-                    "http://localhost:5173"
-                )
+            var allowedOrigins = new List<string>
+            {
+                "http://localhost:5173"
+            };
+
+            var frontendUrl = cfg["FrontendUrl"] ?? Environment.GetEnvironmentVariable("FRONTEND_URL");
+            if (!string.IsNullOrWhiteSpace(frontendUrl))
+            {
+                allowedOrigins.Add(frontendUrl);
+            }
+
+            policy.WithOrigins(allowedOrigins.ToArray())
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

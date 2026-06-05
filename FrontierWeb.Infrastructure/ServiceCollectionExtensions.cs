@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace FrontierWeb.Infrastructure
 {
@@ -9,8 +10,17 @@ namespace FrontierWeb.Infrastructure
     {
         public static IServiceCollection AddBlogInfrastructure(this IServiceCollection services, IConfiguration cfg)
         {
-            services.AddDbContext<BlogDbContext>(opt =>
-                opt.UseSqlite(cfg.GetConnectionString("BlogDb") ?? "Data Source=blog.db"));
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            if (!string.IsNullOrWhiteSpace(databaseUrl))
+            {
+                services.AddDbContext<BlogDbContext>(opt =>
+                    opt.UseNpgsql(databaseUrl));
+            }
+            else
+            {
+                services.AddDbContext<BlogDbContext>(opt =>
+                    opt.UseSqlite(cfg.GetConnectionString("BlogDb") ?? "Data Source=blog.db"));
+            }
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPostService, PostService>();
