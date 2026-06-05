@@ -12,11 +12,26 @@ if (!string.IsNullOrWhiteSpace(port))
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 }
 
+if (builder.Environment.IsProduction() && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DATABASE_URL")))
+{
+    throw new InvalidOperationException("Missing DATABASE_URL. Set the Neon Postgres connection string in Railway environment variables.");
+}
+
 // Auth
 var cfg = builder.Configuration;
-var jwtKey = cfg["Auth:Key"] ?? "DEV_ONLY_CHANGE_ME";
+var jwtKey = cfg["Auth:Key"] ?? "";
 var jwtIssuer = cfg["Auth:Issuer"] ?? "BlogApi";
 var jwtAudience = cfg["Auth:Audience"] ?? "BlogApiClients";
+
+if (string.IsNullOrWhiteSpace(jwtKey) && !builder.Environment.IsDevelopment())
+{
+    throw new InvalidOperationException("Missing Auth:Key. Set the JWT secret as the environment variable Auth__Key (or Auth:Key) in Railway.");
+}
+
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    jwtKey = "DEV_ONLY_CHANGE_ME";
+}
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

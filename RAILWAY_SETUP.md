@@ -7,7 +7,7 @@
 ✅ Dockerfile created  
 ✅ appsettings.json secured (no secrets)  
 ✅ Port binding configured  
-✅ CORS for frontend URL support  
+✅ CORS for frontend URL support
 
 ---
 
@@ -21,6 +21,7 @@
    ```
    postgresql://username:password@ep-xxxxx.us-east-1.neon.tech/dbname?sslmode=require
    ```
+
    - Click "Connection string" → "Nodejs" or copy the full URL
 6. **Keep this safe** — this is your `DATABASE_URL`
 
@@ -43,16 +44,17 @@ In Railway dashboard, click on your newly created service and go to **"Variables
 
 Add these variables **exactly as shown**:
 
-| Name | Value |
-|------|-------|
-| `DATABASE_URL` | Your Neon connection string from Step 1 |
-| `FRONTEND_URL` | `http://localhost:5173` (for now; update after frontend deploys) |
-| `Auth:Key` | A random string (e.g., `super-secret-jwt-key-change-me-in-prod`) |
-| `Auth:Issuer` | `BlogApi` |
-| `Auth:Audience` | `BlogApiClients` |
-| `ASPNETCORE_ENVIRONMENT` | `Production` |
+| Name                     | Value                                                            |
+| ------------------------ | ---------------------------------------------------------------- |
+| `DATABASE_URL`           | Your Neon connection string from Step 1                          |
+| `FRONTEND_URL`           | `http://localhost:5173` (for now; update after frontend deploys) |
+| `Auth:Key`               | A random string (e.g., `super-secret-jwt-key-change-me-in-prod`) |
+| `Auth:Issuer`            | `BlogApi`                                                        |
+| `Auth:Audience`          | `BlogApiClients`                                                 |
+| `ASPNETCORE_ENVIRONMENT` | `Production`                                                     |
 
 ### How to add variables:
+
 - Click the "+" button next to "Variables"
 - Enter the key and value
 - Press Enter or click Save
@@ -67,6 +69,7 @@ Add these variables **exactly as shown**:
 4. Once **"Running"** appears, your backend is live
 
 ### Get your Railway URL:
+
 - Go to the service
 - In the top right, click **"Copy Domain"**
 - It will be something like: `frontier-back.up.railway.app`
@@ -96,20 +99,24 @@ Once your frontend is also deployed, update `FRONTEND_URL` in Railway:
 ## Common Issues & Fixes
 
 ### ❌ "Connection refused" or database errors
+
 - Check `DATABASE_URL` is correct in Railway Variables
 - Verify Neon database exists and is running
 - Test the connection string locally first
 
 ### ❌ "CORS error" on frontend
+
 - Make sure `FRONTEND_URL` is set in Railway Variables
 - Include the protocol (`https://` not just domain)
 - Restart the Railway service after changing variables
 
 ### ❌ "Port already in use"
+
 - Railway provides `PORT` env var automatically
 - Code already reads it, so this shouldn't happen
 
 ### ❌ "Build failed"
+
 - Check Dockerfile syntax
 - Verify all project references are correct
 - Check Railway build logs for details
